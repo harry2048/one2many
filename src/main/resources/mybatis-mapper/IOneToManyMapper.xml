@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.one2many.mapper.IOneToManyMapper">
+
+
+    <resultMap type="com.baidu.one2many.vo.Position" id="positionTeacherResultMap">
+        <id property="id" column="id"/>
+        <result property="name" column="t_pos_name"/> <!-- t_name -->
+        <!--  这是一对多   职位 1  对 多个老师
+        property：javaBean中的属性名称
+        javaType: javaBean中的属性名称的类型
+        ofType：  javaBean中集合属性的泛型
+         -->
+        <collection property="teacherList" javaType="list" ofType="com.baidu.one2many.vo.Teacher">
+            <!--
+                为避免俩个表中有字段重名的情况，要视情况  设置别名，避免赋值的覆盖现象
+
+                使用collection的方式，解决了一对多，也可以在内存中赋值
+             -->
+            <id property="id" column="t_id"/>
+            <result property="no" column="t_no"/>
+            <result property="name" column="t_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryPositionTeacherResultMapById" resultMap="positionTeacherResultMap"
+            parameterType="Integer">
+        SELECT
+        p.*,
+        t.t_id,
+        t.t_name,
+        t.t_no
+        FROM tb_position p
+        LEFT JOIN tb_teacher t
+        ON p.id = t.position_id
+        WHERE p.id = #{id}
+    </select>
+</mapper>
